@@ -15,7 +15,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", sans-serif;
           }
           body {
             background: #f5f5f5;
@@ -104,7 +104,7 @@
             padding: 1rem;
             border-radius: 4px;
             overflow-x: auto;
-            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-family: "Noto Sans KR", monospace;
           }
           .-feed-entry-content blockquote {
             border-left: 4px solid #eee;
