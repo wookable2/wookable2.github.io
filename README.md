@@ -17,7 +17,7 @@ Acknowledgments: Thanks to [Astro Cactus](https://github.com/chrismwilliams/astr
 ---
 
 # Key Features
-
+ 
 - Astro v5 and Tailwind v4
 - **Integrates with Notion to create a website and not just a blog**
 - **Single file configuration**

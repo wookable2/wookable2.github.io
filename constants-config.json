@@ -102,10 +102,10 @@
 			}
 		},
 		"fontfamily-google-fonts": {
-			"combined-url": "https://fonts.googleapis.com/css2?family=Gothic+A1&family=Noto+Sans+KR:wght@100..900&display=swap",
-			"sans-font-name": "Noto Sans KR",
+			"combined-url": "https://fonts.googleapis.com/css2?family=42dot+Sans:wght@300..800&display=swap",
+			"sans-font-name": "42dot Sans",
 			"serif-font-name": "",
-			"mono-font-name": "Noto Sans KR\\ Mono"
+			"mono-font-name": "42dot Sans\\ Mono"
 		}
 	},
 	"webmention": {
