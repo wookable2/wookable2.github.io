@@ -18,7 +18,7 @@ interface Props {
 const { post, as: Tag = "div", withDesc = false, withImage = true } = Astro.props;
 const postLink = getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION);
 
-// Handle Notion image objects properly
+// Handle Notion image objects with proper capitalization
 let postImage = null;
 
 if (post.FeaturedImage) {
@@ -26,14 +26,15 @@ if (post.FeaturedImage) {
 		// Direct URL string
 		postImage = post.FeaturedImage;
 	} else if (Array.isArray(post.FeaturedImage)) {
-		// Array of image objects: [{ url: "...", name: "..." }]
+		// Array of image objects
 		const imageObj = post.FeaturedImage[0];
-		if (imageObj && typeof imageObj === 'object' && imageObj.url) {
-			postImage = imageObj.url;
+		if (imageObj && typeof imageObj === 'object') {
+			// Try both capitalized and lowercase versions
+			postImage = imageObj.Url || imageObj.url;
 		}
-	} else if (typeof post.FeaturedImage === 'object' && post.FeaturedImage.url) {
-		// Single image object: { url: "...", name: "..." }
-		postImage = post.FeaturedImage.url;
+	} else if (typeof post.FeaturedImage === 'object') {
+		// Single image object - try both Url and url
+		postImage = post.FeaturedImage.Url || post.FeaturedImage.url;
 	}
 }
 
