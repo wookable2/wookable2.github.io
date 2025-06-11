@@ -18,20 +18,27 @@ interface Props {
 const { post, as: Tag = "div", withDesc = false, withImage = true } = Astro.props;
 const postLink = getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION);
 
-// Handle different Notion image formats
-let postImage;
-if (typeof post.FeaturedImage === 'string') {
-	postImage = post.FeaturedImage;
-} else if (post.FeaturedImage?.url) {
-	postImage = post.FeaturedImage.url;
-} else if (Array.isArray(post.FeaturedImage) && post.FeaturedImage[0]?.url) {
-	postImage = post.FeaturedImage[0].url;
-} else {
-	postImage = post.FeaturedImage;
+// Handle Notion image objects properly
+let postImage = null;
+
+if (post.FeaturedImage) {
+	if (typeof post.FeaturedImage === 'string') {
+		// Direct URL string
+		postImage = post.FeaturedImage;
+	} else if (Array.isArray(post.FeaturedImage)) {
+		// Array of image objects: [{ url: "...", name: "..." }]
+		const imageObj = post.FeaturedImage[0];
+		if (imageObj && typeof imageObj === 'object' && imageObj.url) {
+			postImage = imageObj.url;
+		}
+	} else if (typeof post.FeaturedImage === 'object' && post.FeaturedImage.url) {
+		// Single image object: { url: "...", name: "..." }
+		postImage = post.FeaturedImage.url;
+	}
 }
 
-// Debug info showing both raw data and processed URL
-const debugInfo = `Raw: ${JSON.stringify(post.FeaturedImage)} | URL: ${postImage}`;
+// Debug info
+const debugInfo = `Raw: ${JSON.stringify(post.FeaturedImage)} | Final URL: ${postImage}`;
 ---
 
 <div class="flex gap-4">
