@@ -1,6 +1,4 @@
 ---
-// import type { CollectionEntry } from "astro:content";
-// import type { HTMLTag, Polymorphic } from "astro/types";
 import type { HTMLTag } from "astro/types";
 import FormattedDate from "@/components/FormattedDate.astro";
 import type { Post } from "@/lib/interfaces";
@@ -14,54 +12,79 @@ interface Props {
 	post: Post;
 	as?: HTMLTag;
 	withDesc?: boolean;
+	withImage?: boolean; // New prop to control image display
 }
 
-const { post, as: Tag = "div", withDesc = false } = Astro.props;
+const { post, as: Tag = "div", withDesc = false, withImage = true } = Astro.props;
 const postLink = getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION);
+
+// Using FeaturedImage property from Notion
+const postImage = post.FeaturedImage;
 ---
 
-<FormattedDate date={new Date(post.Date)} class="text-accent/90 min-w-[120px] text-xs" />
-<Tag>
+<div class="flex gap-4">
+	{/* Image Section */}
 	{
-		post.Pinned && (
-			<Icon
-				class="me-1 inline-block h-6 w-6"
-				name={"pin"}
-				aria-label="Pinned Post"
-				focusable="false"
-				fill="#D50B0D"
-			/>
+		withImage && postImage && (
+			<div class="flex-shrink-0">
+				<a href={postLink} class="block" data-astro-prefetch>
+					<img
+						src={postImage}
+						alt={`Preview image for ${post.Title}`}
+						class="h-20 w-20 rounded-lg object-cover sm:h-24 sm:w-24"
+						loading="lazy"
+					/>
+				</a>
+			</div>
 		)
 	}
 
-	<a href={postLink} class="site-page-link" data-astro-prefetch>
-		{post.Title}
-	</a>
-</Tag>
-{withDesc && post.Excerpt && <q class="line-clamp-3 block italic">{post.Excerpt}</q>}
-{
-	post.Tags && post.Tags.length > 0 && (
-		<div class="mt-1">
-			<Icon
-				class="me-1 inline-block h-4 w-4"
-				name={"tag-outline"}
-				aria-hidden="true"
-				focusable="false"
-			/>
-			{post.Tags.map((tag, i) => (
-				<>
-					<a
-						class={`inline-block rounded-md px-1 text-sm ${getNotionColorToTailwindColor(
-							tag.color + "-background",
-							true,
-						)}`}
-						aria-label={`View more blogs with the tag ${tag.name}`}
-						href={getNavLink("/tags/" + slugify(tag.name) + "/")}
-					>
-						{tag.name}
-					</a>{" "}
-				</>
-			))}
-		</div>
-	)
-}
+	{/* Content Section */}
+	<div class="flex-1 min-w-0">
+		<FormattedDate date={new Date(post.Date)} class="text-accent/90 min-w-[120px] text-xs" />
+		<Tag>
+			{
+				post.Pinned && (
+					<Icon
+						class="me-1 inline-block h-6 w-6"
+						name={"pin"}
+						aria-label="Pinned Post"
+						focusable="false"
+						fill="#D50B0D"
+					/>
+				)
+			}
+
+			<a href={postLink} class="site-page-link" data-astro-prefetch>
+				{post.Title}
+			</a>
+		</Tag>
+		{withDesc && post.Excerpt && <q class="line-clamp-3 block italic">{post.Excerpt}</q>}
+		{
+			post.Tags && post.Tags.length > 0 && (
+				<div class="mt-1">
+					<Icon
+						class="me-1 inline-block h-4 w-4"
+						name={"tag-outline"}
+						aria-hidden="true"
+						focusable="false"
+					/>
+					{post.Tags.map((tag, i) => (
+						<>
+							<a
+								class={`inline-block rounded-md px-1 text-sm ${getNotionColorToTailwindColor(
+									tag.color + "-background",
+									true,
+								)}`}
+								aria-label={`View more blogs with the tag ${tag.name}`}
+								href={getNavLink("/tags/" + slugify(tag.name) + "/")}
+							>
+								{tag.name}
+							</a>{" "}
+						</>
+					))}
+				</div>
+			)
+		}
+	</div>
+</div>
