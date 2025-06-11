@@ -18,11 +18,20 @@ interface Props {
 const { post, as: Tag = "div", withDesc = false, withImage = true } = Astro.props;
 const postLink = getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION);
 
-// Simple debug version - always show a placeholder first
-const postImage = post.FeaturedImage;
+// Handle different Notion image formats
+let postImage;
+if (typeof post.FeaturedImage === 'string') {
+	postImage = post.FeaturedImage;
+} else if (post.FeaturedImage?.url) {
+	postImage = post.FeaturedImage.url;
+} else if (Array.isArray(post.FeaturedImage) && post.FeaturedImage[0]?.url) {
+	postImage = post.FeaturedImage[0].url;
+} else {
+	postImage = post.FeaturedImage;
+}
 
-// Force show debug info in the HTML
-const debugInfo = JSON.stringify(post.FeaturedImage);
+// Debug info showing both raw data and processed URL
+const debugInfo = `Raw: ${JSON.stringify(post.FeaturedImage)} | URL: ${postImage}`;
 ---
 
 <div class="flex gap-4">
