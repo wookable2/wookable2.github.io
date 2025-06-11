@@ -37,9 +37,6 @@ if (post.FeaturedImage) {
 		postImage = post.FeaturedImage.Url || post.FeaturedImage.url;
 	}
 }
-
-// Debug info
-const debugInfo = `Raw: ${JSON.stringify(post.FeaturedImage)} | Final URL: ${postImage}`;
 ---
 
 <div class="flex gap-4">
