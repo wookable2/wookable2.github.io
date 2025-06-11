@@ -18,8 +18,21 @@ interface Props {
 const { post, as: Tag = "div", withDesc = false, withImage = true } = Astro.props;
 const postLink = getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION);
 
-// Using FeaturedImage property from Notion
-const postImage = post.FeaturedImage;
+// Handle different Notion image formats
+let postImage;
+if (typeof post.FeaturedImage === 'string') {
+	// Direct URL string
+	postImage = post.FeaturedImage;
+} else if (post.FeaturedImage?.url) {
+	// Single file object with url property
+	postImage = post.FeaturedImage.url;
+} else if (Array.isArray(post.FeaturedImage) && post.FeaturedImage[0]?.url) {
+	// Array of file objects
+	postImage = post.FeaturedImage[0].url;
+}
+
+// Debug: Log the processed image URL (remove this after checking)
+console.log('Processed image URL:', postImage);
 ---
 
 <div class="flex gap-4">
