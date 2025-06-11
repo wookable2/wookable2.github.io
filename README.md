@@ -6,7 +6,7 @@
 </h1>
 
 > [!NOTE]
-> Read this   page on the [rendered website](https://nerdymomocat.github.io/posts/introducing-webtrotion/) to see how it looks and what setup entails. That version is updated more frequently, but you can also check the [Demo](#demo) for source → render mapping. For supported blocks, see [here](https://nerdymomocat.github.io/posts/supported-blocks-in-webtrotion/).
+> Read this page on the [rendered website](https://nerdymomocat.github.io/posts/introducing-webtrotion/) to see how it looks and what setup entails. That version is updated more frequently, but you can also check the [Demo](#demo) for source → render mapping. For supported blocks, see [here](https://nerdymomocat.github.io/posts/supported-blocks-in-webtrotion/).
 
 Webtrotion is an easy-to-install, highly-configurable starter built with [Astro](https://astro.build/) and [Notion](notion://www.notion.so/), perfect for a blog or a full website.
 
