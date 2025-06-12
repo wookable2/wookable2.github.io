@@ -12,7 +12,7 @@ interface Props {
 	post: Post;
 	as?: HTMLTag;
 	withDesc?: boolean;
-	withImage?: boolean; // New prop to control image display
+	withImage?: boolean;
 }
 
 const { post, as: Tag = "div", withDesc = false, withImage = true } = Astro.props;
@@ -38,27 +38,45 @@ if (post.FeaturedImage) {
 	}
 }
 
-// Debug info
-const debugInfo = `Raw: ${JSON.stringify(post.FeaturedImage)} | Final URL: ${postImage}`;
+// Optimize Notion image URL for faster loading
+function optimizeNotionImageUrl(url: string): string {
+	if (!url) return url;
+	
+	// Check if it's a Notion image URL
+	if (url.includes('notion') || url.includes('amazonaws.com')) {
+		// Add width parameter for smaller preview images (80px * 2 for retina = 160px)
+		const separator = url.includes('?') ? '&' : '?';
+		return `${url}${separator}width=160`;
+	}
+	
+	return url;
+}
+
+const optimizedImageUrl = postImage ? optimizeNotionImageUrl(postImage) : null;
 ---
 
 <div class="flex gap-4">
-	{/* Image Section - Always show for debugging */}
+	{/* Image Section */}
 	{
 		withImage && (
 			<div class="flex-shrink-0">
-				<div class="h-20 w-20 bg-gray-200 rounded-lg flex items-center justify-center text-xs p-1">
-					{postImage ? (
+				<div class="h-20 w-20 bg-gray-200 rounded-lg flex items-center justify-center text-xs p-1 overflow-hidden">
+					{optimizedImageUrl ? (
 						<img
-							src={postImage}
+							src={optimizedImageUrl}
 							alt={`Preview image for ${post.Title}`}
-							class="h-full w-full rounded-lg object-cover"
+							class="h-full w-full rounded-lg object-cover transition-opacity duration-200"
 							loading="lazy"
+							decoding="async"
+							width="80"
+							height="80"
+							style="background-color: #f3f4f6;"
+							onload="this.style.opacity='1'"
+							onerror="this.parentElement.innerHTML='<div class=\\'text-center text-xs\\'>Image failed to load</div>'"
 						/>
 					) : (
-						<div class="text-center">
-							<div>No Image</div>
-							<div class="mt-1 text-xs break-all">{debugInfo}</div>
+						<div class="text-center text-xs text-gray-500">
+							No Image
 						</div>
 					)}
 				</div>
@@ -112,6 +130,5 @@ const debugInfo = `Raw: ${JSON.stringify(post.FeaturedImage)} | Final URL: ${pos
 					))}
 				</div>
 			)
-		}
-	</div>
+		}</div>
 </div>
