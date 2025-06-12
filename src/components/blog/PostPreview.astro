@@ -1,4 +1,6 @@
 ---
+// import type { CollectionEntry } from "astro:content";
+// import type { HTMLTag, Polymorphic } from "astro/types";
 import type { HTMLTag } from "astro/types";
 import FormattedDate from "@/components/FormattedDate.astro";
 import type { Post } from "@/lib/interfaces";
@@ -12,123 +14,54 @@ interface Props {
 	post: Post;
 	as?: HTMLTag;
 	withDesc?: boolean;
-	withImage?: boolean;
 }
 
-const { post, as: Tag = "div", withDesc = false, withImage = true } = Astro.props;
+const { post, as: Tag = "div", withDesc = false } = Astro.props;
 const postLink = getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION);
-
-// Handle Notion image objects with proper capitalization
-let postImage = null;
-
-if (post.FeaturedImage) {
-	if (typeof post.FeaturedImage === 'string') {
-		// Direct URL string
-		postImage = post.FeaturedImage;
-	} else if (Array.isArray(post.FeaturedImage)) {
-		// Array of image objects
-		const imageObj = post.FeaturedImage[0];
-		if (imageObj && typeof imageObj === 'object') {
-			// Try both capitalized and lowercase versions
-			postImage = imageObj.Url || imageObj.url;
-		}
-	} else if (typeof post.FeaturedImage === 'object') {
-		// Single image object - try both Url and url
-		postImage = post.FeaturedImage.Url || post.FeaturedImage.url;
-	}
-}
-
-// Optimize Notion image URL for faster loading
-function optimizeNotionImageUrl(url: string): string {
-	if (!url) return url;
-	
-	// Check if it's a Notion image URL
-	if (url.includes('notion') || url.includes('amazonaws.com')) {
-		// Add width parameter for smaller preview images (80px * 2 for retina = 160px)
-		const separator = url.includes('?') ? '&' : '?';
-		return `${url}${separator}width=160`;
-	}
-	
-	return url;
-}
-
-const optimizedImageUrl = postImage ? optimizeNotionImageUrl(postImage) : null;
 ---
 
-<div class="flex gap-4">
-	{/* Image Section */}
+<FormattedDate date={new Date(post.Date)} class="text-accent/90 min-w-[120px] text-xs" />
+<Tag>
 	{
-		withImage && (
-			<div class="flex-shrink-0">
-				<div class="h-20 w-20 bg-gray-200 rounded-lg flex items-center justify-center text-xs p-1 overflow-hidden">
-					{optimizedImageUrl ? (
-						<img
-							src={optimizedImageUrl}
-							alt={`Preview image for ${post.Title}`}
-							class="h-full w-full rounded-lg object-cover transition-opacity duration-200"
-							loading="lazy"
-							decoding="async"
-							width="80"
-							height="80"
-							style="background-color: #f3f4f6;"
-							onload="this.style.opacity='1'"
-							onerror="this.parentElement.innerHTML='<div class=\\'text-center text-xs\\'>Image failed to load</div>'"
-						/>
-					) : (
-						<div class="text-center text-xs text-gray-500">
-							No Image
-						</div>
-					)}
-				</div>
-			</div>
+		post.Pinned && (
+			<Icon
+				class="me-1 inline-block h-6 w-6"
+				name={"pin"}
+				aria-label="Pinned Post"
+				focusable="false"
+				fill="#D50B0D"
+			/>
 		)
 	}
 
-	{/* Content Section */}
-	<div class="flex-1 min-w-0">
-		<FormattedDate date={new Date(post.Date)} class="text-accent/90 min-w-[120px] text-xs" />
-		<Tag>
-			{
-				post.Pinned && (
-					<Icon
-						class="me-1 inline-block h-6 w-6"
-						name={"pin"}
-						aria-label="Pinned Post"
-						focusable="false"
-						fill="#D50B0D"
-					/>
-				)
-			}
-
-			<a href={postLink} class="site-page-link" data-astro-prefetch>
-				{post.Title}
-			</a>
-		</Tag>
-		{withDesc && post.Excerpt && <q class="line-clamp-3 block italic">{post.Excerpt}</q>}
-		{
-			post.Tags && post.Tags.length > 0 && (
-				<div class="mt-1">
-					<Icon
-						class="me-1 inline-block h-4 w-4"
-						name={"tag-outline"}
-						aria-hidden="true"
-						focusable="false"
-					/>
-					{post.Tags.map((tag, i) => (
-						<>
-							<a
-								class={`inline-block rounded-md px-1 text-sm ${getNotionColorToTailwindColor(
-									tag.color + "-background",
-									true,
-								)}`}
-								aria-label={`View more blogs with the tag ${tag.name}`}
-								href={getNavLink("/tags/" + slugify(tag.name) + "/")}
-							>
-								{tag.name}
-							</a>{" "}
-						</>
-					))}
-				</div>
-			)
-		}</div>
-</div>
+	<a href={postLink} class="site-page-link" data-astro-prefetch>
+		{post.Title}
+	</a>
+</Tag>
+{withDesc && post.Excerpt && <q class="line-clamp-3 block italic">{post.Excerpt}</q>}
+{
+	post.Tags && post.Tags.length > 0 && (
+		<div class="mt-1">
+			<Icon
+				class="me-1 inline-block h-4 w-4"
+				name={"tag-outline"}
+				aria-hidden="true"
+				focusable="false"
+			/>
+			{post.Tags.map((tag, i) => (
+				<>
+					<a
+						class={`inline-block rounded-md px-1 text-sm ${getNotionColorToTailwindColor(
+							tag.color + "-background",
+							true,
+						)}`}
+						aria-label={`View more blogs with the tag ${tag.name}`}
+						href={getNavLink("/tags/" + slugify(tag.name) + "/")}
+					>
+						{tag.name}
+					</a>{" "}
+				</>
+			))}
+		</div>
+	)
+}
